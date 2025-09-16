@@ -126,7 +126,7 @@ def model_page():
             st.sidebar.error(f"ERRO ao carregar ou usar o modelo: {e}")
             st.stop()
     else:
-        st.info("👈 Por favor, selecione um modelo no menu ao lado para iniciar.")
+        st.info("👆 Por favor, selecione um modelo no menu acima para iniciar.")
 
 def chart_page():
     """
