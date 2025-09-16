@@ -131,28 +131,31 @@ def model_page():
 def chart_page():
     """
     Cria uma página no Streamlit para análise exploratória,
-    utilizando apenas os widgets de gráficos nativos do Streamlit.
+    fazendo o download do dataset sob demanda.
     """
     st.title("Página de Análise com Gráficos Nativos")
     st.markdown("Esta página exibe visualizações para análise de dados usando exclusivamente `st.bar_chart`, `st.area_chart` e `st.dataframe`.")
 
+    DATA_URL = "https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv"
+
     # --- Carregamento dos Dados ---
     @st.cache_data
-    def load_data():
+    def load_data(url):
         try:
-            dados = pd.read_csv("data/creditcard.csv")
-            return dados
-        except FileNotFoundError:
+            with st.spinner("Baixando e carregando o dataset (aprox. 150MB)... Isso pode levar alguns segundos."):
+                dados = pd.read_csv(url)
+                return dados
+        except Exception as e:
+            st.error(f"Ocorreu um erro ao baixar ou carregar os dados: {e}")
             return None
 
-    dados = load_data()
+    # Chama a função para carregar os dados
+    dados = load_data(DATA_URL)
 
     if dados is None:
-        st.error("Arquivo 'creditcard.csv' não encontrado na pasta 'data'.")
-        st.info("Por favor, baixe o dataset do Kaggle e coloque-o na pasta correta: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud")
+        st.error("Não foi possível carregar os dados. Verifique sua conexão com a internet e tente novamente.")
         return
 
-    # --- Exibição Inicial dos Dados ---
     if st.checkbox("Mostrar tabela de dados (head)"):
         st.subheader("Visualizando as primeiras linhas")
         st.dataframe(dados.head())
@@ -164,8 +167,6 @@ def chart_page():
     st.markdown("---")
     st.subheader("Análise da Variável Alvo (`Class`)")
 
-    # --- Gráfico de Barras da Distribuição das Classes ---
-    # st.bar_chart é perfeito para mostrar contagens de categorias
     st.write("Contagem de Transações Normais (0) vs. Fraudulentas (1)")
     class_counts = dados['Class'].value_counts()
     st.bar_chart(class_counts)
@@ -180,22 +181,16 @@ def chart_page():
     st.subheader("Análise das Features `Time` e `Amount` (Histogramas)")
     st.write("Os gráficos de área abaixo funcionam como histogramas, mostrando a frequência de transações agrupadas por `Time` e `Amount`.")
 
-    # --- Histograma para Time e Amount usando st.area_chart ---
-    # Para criar um histograma, precisamos primeiro "binarizar" os dados (agrupar em intervalos)
-    # Usaremos a função numpy.histogram para isso.
-
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown("#### Distribuição da Feature `Time`")
         hist_time_values, hist_time_bins = np.histogram(dados['Time'], bins=50)
-        # Criamos um DataFrame para o st.area_chart
         time_chart_data = pd.DataFrame({'Frequência': hist_time_values}, index=hist_time_bins[:-1])
         st.area_chart(time_chart_data)
 
     with col2:
         st.markdown("#### Distribuição da Feature `Amount`")
-        # Filtramos valores muito altos para melhor visualização
         filtered_amount = dados[dados['Amount'] < 1000]['Amount']
         hist_amount_values, hist_amount_bins = np.histogram(filtered_amount, bins=50)
         amount_chart_data = pd.DataFrame({'Frequência': hist_amount_values}, index=hist_amount_bins[:-1])
