@@ -1,10 +1,10 @@
 # Credit-Card-Fraud-Detection
 
-## Avisos
-
 Dashboard disponível em: [Link](https://joao-artl-credit-card-fraud-detection.streamlit.app/)
 
-**Importante**: Como o aplicativo foi hospedado na plataforma gratuita do Streamlit, ele pode estar inativo. Caso isso aconteça, basta clicar no botão para ativá-lo e aguardar alguns segundos.
+## Avisos
+
+Como o aplicativo foi hospedado na plataforma gratuita do Streamlit, ele pode estar inativo. Caso isso aconteça, basta clicar no botão para ativá-lo e aguardar alguns segundos.
 
 ## Descrição
 Projeto de Machine Learning que implementa um modelo de classificação para identificar transações fraudulentas.
